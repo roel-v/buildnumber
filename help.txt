@@ -1,0 +1,140 @@
+#define SHORT_USAGE																\
+"Usage:\n"																		\
+"BuildNumber [-f filename] [--display (aipbfs)] [--reset [aipb]] [--increment [aipb]]\n"	\
+"Type BuildNumber --help for a complete description."
+
+#define INTRODUCTION_TEXT														\
+"BuildNumber is a tool to maintain a file with version information. "			\
+"Contrary to what the name suggests, it doesn't only work on the build number "	\
+"of a software product but on the whole version number. A version number is	"	\
+"composed of 5 parts:\n"														\
+"- a major version: major versions are typically increased when big new	"		\
+"features are introduced in the program. File formats may have changed,	"		\
+"interfaces may have changed: when a new major version is released, all bets "	\
+"are off.\n"																	\
+"- a minor version: minor versions are updated when small features are " 		\
+"added or major bugs are fixed, but all changes are backward compatible (as "	\
+"far as possible).\n"															\
+"- a patchlevel: small bugs are fixed with increases in patchlevel.\n"			\
+"- a build number: build numbers are mostly for internal use. Every time the "	\
+"software is compiled and packaged (be it for development or testing or just "	\
+"because the automated build compiles every night whether there are changes	"	\
+"or not), the build number is increased.\n"										\
+"- an identifier, like 'beta1' or 'rc3'. The identifier is an extra string "	\
+"that adds additional information about the release status of the file."		\
+"BuildNumber can read and modify a file in which this information is stored."	\
+"The file looks like this:\n"													\
+"\n"																			\
+"<version>\n"																	\
+"  <major_version></major_version>\n"											\
+"  <minor_version></minor_version>\n"											\
+"  <patchlevel></patchlevel>\n"													\
+"  <build></build>\n"															\
+"  <identifier></identifier>\n"													\
+"</version>\n"																	\
+"\n"																			\
+"A couple of examples, in the order you're likely to encounter them:\n"			\
+"* BuildNumber -c : Create a new BuildNumber file with filename "				\
+"\"version.xml\".\n"															\
+"* BuildNumber -i a : Increase the major version by one.\n"						\
+"* BuildNumber -d f : Display the complete version number, eg \"1.0.0.0\".\n"	\
+"* BuildNumber -d f -o version.h -p c -a versionnumber : Write the full "		\
+"version number to a file called \"version.h\", write it as a variable that "	\
+"can be used in the C programming language and call that variable "				\
+"\"versionnumber\".\n"															\
+"The identifier part is special in that it can contain special values that "	\
+"will be expanded when the tool is run, like pre-defined macros. The available "\
+"ones are:"																		\
+"* %d : expands to the current date"											\
+"* %t : expands to the current time"											\
+"\n"																			\
+"Available options\n"
+
+// BuildNumber can handle the following arguments:
+// -f / --file <filename>
+#define FILE_TEXT																\
+    "Use the supplied filename to read/write version information from/to. "		\
+    "When not supplied, a file 'version.xml' is used. When no such file is "	\
+    "found, an error is reported.\n"
+    
+// -d / --display [option]
+#define DISPLAY_TEXT															\
+    "Print a version number as found in the version file. Available options:\n" \
+    "* a : Major version. Example output: '3'.\n"								\
+    "* i : Minor version. Example output: '1'.\n"								\
+    "* p : Patchlevel. Example output: '4'.\n"									\
+    "* b : Build number. Example output: '598'.\n"								\
+    "* d : Identifier. Example output: 'beta1'.\n"								\
+    "* f : Full version. Example output: '3.1.4.598-beta1'.\n"					\
+    "* s : Short version, same as full but without build number.\n"				\
+    "Example output: '3.1.4-beta1'.\n"
+    
+//-i / --increment [option]
+#define INCREMENT_TEXT															\
+    "Increments one of the components in the file by 1. Available options:\n"	\
+    "* a : Major version.\n"													\
+    "* i : Minor version.\n"													\
+    "* p : Patchlevel.\n"														\
+    "* b : Build number.\n"														\
+    
+//-r / -reset [option]
+#define RESET_TEXT																\
+    "Resets one of the components in the file to 0. Available options:\n"		\
+    "* a : Major version.\n"													\
+    "* i : Minor version.\n"													\
+    "* p : Patchlevel.\n"														\
+    "* b : Build number."
+    
+//-h / --help
+#define HELP_TEXT																\
+    "Display this help message.\n"
+    
+//-c / --create
+#define CREATE_TEXT																\
+	"Create a new version file with all version number parts set to 0."
+
+//-o / --output [filename]
+#define OUTPUT_TEXT																\
+	"Write the output to the file specificed instead of writing to standard	"	\
+	"output. Useful when trying to include the version number in another file "	\
+	"in environments where no easy way to do output redirection is available. "	\
+	"Before overwriting an already "		\
+	"existing file, BuildNumber will check if the content of the target "		\
+	"outputfile is the same as BuildNumber is trying to write to it. If so, "	\
+	"the file will not be written again, unless the '--force' option is	"		\
+	"specified. This is to prevent build systems that rely on timestamps from "	\
+	"rebuilding when no real changes have occurred."
+	
+// --force
+#define FORCE_TEXT																\
+	"Overwrite the specified target output file, even when the contents of "	\
+	"the new file are the same as that of the old one. See '--output' for "		\
+	"more information."
+	
+//-p / --programming-language [language]
+#define PROGRAMMING_LANGUAGE_TEXT												\
+	"When this option is specified, the version number will be printed in a "	\
+	"form that makes it suitable for use in a programming language. This way "	\
+	"output of BuildNumber can easily be included in a software program, for "	\
+	"example to show the version number to the user of said software.\n"		\
+	"The name of the variable that is used (when applicable for the "			\
+	"programming that is choosen) depends on the --variable_name "				\
+	"option; if no such option is specified, the default (\"version\") is "		\
+	"choosen."																	\
+	"Available options:\n"														\
+	"* c : Print in C format, more specifically: const char <varname> = "		\
+	"\"version\";\n"
+	
+//-a / --variable_name [varname]
+#define VARIABLE_NAME_TEXT														\
+	"Only valid when -p is also specified. Specifies the variable name that "	\
+	"used when printing the version number in a format that is suitable for "	\
+	"use in a software program. Defaults to \"version\"."
+	
+//-v / --version	
+#define VERSION_TEXT															\
+	"Display BuildNumbers' own version number."
+	
+//-n / --no-identifier
+#define NO_IDENTIFIER_TEXT														\
+	"Leave out the identifier when showing full or short version numbers."
